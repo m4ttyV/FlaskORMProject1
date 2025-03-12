@@ -7,11 +7,11 @@
   <body>
   <div>
     <button onclick="loadData('main')">Основная таблица</button>
-    <button onclick="loadData('query1')">Запрос 1</button>
-    <button onclick="loadData('query2')">Запрос 2</button>
-    <button onclick="loadData('query3')">Запрос 3</button>
-    <button onclick="loadData('query4')">Запрос 4</button>
-    <button onclick="loadData('query5')">Запрос 5</button>
+    <button onclick="loadData('query1')">ТОП-10 самых длинных наблюдений НЛО</button>
+    <button onclick="loadData('query2')">Вывести все события с 2010 года</button>
+    <button onclick="loadData('query3')">Вывести города с наибольшим количеством наблюдений НЛО</button>
+    <button onclick="loadData('query4')">Вывести среднюю продолжительность наблюдений по странам</button>
+    <button onclick="loadData('query5')">Вывести штаты с наибольшим количеством наблюдений</button>
 </div>
     <h3>Встречи НЛО</h3>
     <table>
@@ -39,34 +39,26 @@
 
   <script>
     function loadData(query) {
-        let url = '';
-        if (query === 'main') url = '/index';
-        if (query === 'query1') url = '/query1';
-        if (query === 'query2') url = '/query2';
-        if (query === 'query3') url = '/query3';
-        if (query === 'query4') url = '/query4';
-        if (query === 'query5') url = '/query5';
+    let url = '';
+    if (query === 'main') url = '/';
+    if (query === 'query1') url = '/query1';
+    if (query === 'query2') url = '/query2';
+    if (query === 'query3') url = '/query3';
+    if (query === 'query4') url = '/query4';
+    if (query === 'query5') url = '/query5';
 
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                const tableBody = document.querySelector('#data-table tbody');
-                tableBody.innerHTML = '';
-                data.forEach(event => {
-                    const row = `<tr>
-                        <td>${event.id}</td>
-                        <td>${event.comments}</td>
-                        <td>${event.date_posted}</td>
-                        <td>${event.duration_seconds}</td>
-                        <td>${city.name}</td>
-                        <td>${state.name}</td>
-                        <td>${country.name}</td>
-                    </tr>`;
-                    tableBody.innerHTML += row;
-                });
-            })
-            .catch(error => console.error('Error loading data:', error));
-    }
+    fetch(url)
+        .then(response => response.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const newDoc = parser.parseFromString(html, 'text/html');
+
+            // Обновляем только таблицу, а не всю страницу
+            document.querySelector('table').innerHTML = newDoc.querySelector('table').innerHTML;
+        })
+        .catch(error => console.error('Ошибка загрузки данных:', error));
+}
+
     window.onload = () => loadData('main');
 </script>
   </body>

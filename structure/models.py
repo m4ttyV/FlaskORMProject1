@@ -21,21 +21,64 @@ def main_table():
 
 
 def button1():
-    query = (
-        db.session.query(
-            Event.id.label("1"),
-            Event.comments.label("1"),
-            Event.date_posted.label("1"),
-            Event.duration_seconds.label("1"),
-            City.name.label("1"),
-            State.name.label("1"),
-            Country.name.label("1")
-        )
-        .select_from(Country)
-        .join(State)
-        .join(City)
-        .join(Event)
-    ).limit(100)
+    """ТОП-10 самых длинных наблюдений НЛО"""
+    query = db.session.query(
+        Event.date_posted,
+        Event.comments,
+        Event.duration_seconds,
+        City.name.label("city"),
+        State.name.label("state"),
+        Country.name.label("country")
+    ) \
+        .join(City, Event.city_id == City.id) \
+        .join(State, City.state_id == State.id) \
+        .join(Country, State.country_id == Country.id) \
+        .order_by(db.desc(Event.duration_seconds)) \
+        .limit(10)  # ТОП-10 самых длинных наблюдений
+
+    return [query.statement.columns.keys(), query.all()]
+
+def button2():
+    """Вывести все события с 2010 года"""
+    query = db.session.query(Event.date_posted, Event.comments, Event.duration_seconds, City.name.label("city"),
+                             State.name.label("state"), Country.name.label("country")) \
+        .join(City, Event.city_id == City.id) \
+        .join(State, City.state_id == State.id) \
+        .join(Country, State.country_id == Country.id) \
+        .filter(Event.date_posted >= '2010-01-01')  # Фильтр по дате
+
+    return [query.statement.columns.keys(), query.all()]
+
+def button3():
+    """Вывести города с наибольшим количеством наблюдений НЛО"""
+    query = db.session.query(City.name.label("city"), db.func.count(Event.id).label("sightings"))\
+        .join(Event, Event.city_id == City.id)\
+        .group_by(City.name)\
+        .order_by(db.desc("sightings"))\
+        .limit(10)  # ТОП 10
+
+    return [query.statement.columns.keys(), query.all()]
+
+def button4():
+    """Вывести среднюю продолжительность наблюдений по странам"""
+    query = db.session.query(Country.name.label("country"), db.func.avg(Event.duration_seconds).label("avg_duration"))\
+        .join(City, Event.city_id == City.id)\
+        .join(State, City.state_id == State.id)\
+        .join(Country, State.country_id == Country.id)\
+        .group_by(Country.name)\
+        .order_by(db.desc("avg_duration"))
+
+    return [query.statement.columns.keys(), query.all()]
+
+def button5():
+    """Вывести штаты с наибольшим количеством наблюдений"""
+    query = db.session.query(State.name.label("state"), db.func.count(Event.id).label("sightings"))\
+        .join(City, Event.city_id == City.id)\
+        .join(State, City.state_id == State.id)\
+        .group_by(State.name)\
+        .order_by(db.desc("sightings"))\
+        .limit(10)  # ТОП 10
+
     return [query.statement.columns.keys(), query.all()]
 
 query = Blueprint('query', __name__)
