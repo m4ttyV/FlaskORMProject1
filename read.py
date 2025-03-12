@@ -19,6 +19,7 @@ def get_or_create(session, model, defaults=None, **kwargs):
 
 def load_data(file_path):
     with app.app_context():
+        db.create_all()
         with open(file_path, mode='r', encoding='utf-8') as file:
             reader = csv.DictReader(file)
             next(reader)  # Пропускаем заголовок

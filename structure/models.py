@@ -30,9 +30,9 @@ def button1():
         State.name.label("state"),
         Country.name.label("country")
     ) \
-        .join(City, Event.city_id == City.id) \
-        .join(State, City.state_id == State.id) \
-        .join(Country, State.country_id == Country.id) \
+        .select_from(Event).join(City) \
+        .join(State) \
+        .join(Country) \
         .order_by(db.desc(Event.duration_seconds)) \
         .limit(10)  # ТОП-10 самых длинных наблюдений
 
@@ -42,17 +42,17 @@ def button2():
     """Вывести все события с 2010 года"""
     query = db.session.query(Event.date_posted, Event.comments, Event.duration_seconds, City.name.label("city"),
                              State.name.label("state"), Country.name.label("country")) \
-        .join(City, Event.city_id == City.id) \
-        .join(State, City.state_id == State.id) \
-        .join(Country, State.country_id == Country.id) \
-        .filter(Event.date_posted >= '2010-01-01')  # Фильтр по дате
+        .select_from(Event).join(City) \
+        .join(State) \
+        .join(Country) \
+        .filter(Event.date_posted >= '2010-01-01').limit(10)  # Фильтр по дате
 
     return [query.statement.columns.keys(), query.all()]
 
 def button3():
     """Вывести города с наибольшим количеством наблюдений НЛО"""
     query = db.session.query(City.name.label("city"), db.func.count(Event.id).label("sightings"))\
-        .join(Event, Event.city_id == City.id)\
+        .join(Event)\
         .group_by(City.name)\
         .order_by(db.desc("sightings"))\
         .limit(10)  # ТОП 10
@@ -60,11 +60,12 @@ def button3():
     return [query.statement.columns.keys(), query.all()]
 
 def button4():
+    #Добавить минимальный и максимальный и сдлелать езё один аналогичный запрос по другим данным данным (например город вместо страны)
     """Вывести среднюю продолжительность наблюдений по странам"""
     query = db.session.query(Country.name.label("country"), db.func.avg(Event.duration_seconds).label("avg_duration"))\
-        .join(City, Event.city_id == City.id)\
-        .join(State, City.state_id == State.id)\
-        .join(Country, State.country_id == Country.id)\
+        .join(City)\
+        .join(State)\
+        .join(Country)\
         .group_by(Country.name)\
         .order_by(db.desc("avg_duration"))
 
@@ -73,8 +74,8 @@ def button4():
 def button5():
     """Вывести штаты с наибольшим количеством наблюдений"""
     query = db.session.query(State.name.label("state"), db.func.count(Event.id).label("sightings"))\
-        .join(City, Event.city_id == City.id)\
-        .join(State, City.state_id == State.id)\
+        .select_from(Event).join(City)\
+        .join(State)\
         .group_by(State.name)\
         .order_by(db.desc("sightings"))\
         .limit(10)  # ТОП 10
@@ -90,7 +91,7 @@ class Country(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
 
-    states = db.relationship('State', backref='country', cascade='all, delete')
+    states = db.relationship('State', cascade="all, delete")
 
 class State(db.Model):
     __tablename__ = 'state'
@@ -98,7 +99,8 @@ class State(db.Model):
     name = db.Column(db.String(100), unique=False, nullable=False)
     country_id = db.Column(db.Integer, db.ForeignKey('country.id'), nullable=False)
 
-    cities = db.relationship('City', backref='state', cascade='all, delete')
+    country = db.relationship('Country', back_populates='states')
+    cities = db.relationship('City', cascade="all, delete")
 
 class City(db.Model):
     __tablename__ = 'city'
@@ -106,7 +108,8 @@ class City(db.Model):
     name = db.Column(db.String(100), nullable=False)
     state_id = db.Column(db.Integer, db.ForeignKey('state.id'), nullable=False)
 
-    events = db.relationship('Event', backref='city', cascade='all, delete')
+    state = db.relationship('State', back_populates='cities')
+    events = db.relationship('Event', cascade="all, delete")
 
 class Event(db.Model):
     __tablename__ = 'events'
@@ -114,8 +117,9 @@ class Event(db.Model):
     date_posted = db.Column(db.String(100), nullable=False)
     duration_seconds = db.Column(db.Integer, nullable=False)
     comments = db.Column(db.Text, nullable=True)
-
     city_id = db.Column(db.Integer, db.ForeignKey('city.id'), nullable=False)
+
+    city = db.relationship('City', back_populates='events')
 
 # db.app_context().push()
 #
