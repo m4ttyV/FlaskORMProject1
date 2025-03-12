@@ -17,8 +17,7 @@ def index():
 @views.route("/query1")
 def query1():
     [buildings_head, buildings_body] = button1()
-    html = render_template(
-        'table1.html',
+    html = render_template('table1.html',
         buildings_head=buildings_head,
         buildings_body=buildings_body
     )
