@@ -1,5 +1,5 @@
-from app import db
-from flask import Blueprint, render_template
+from config import db
+from flask import Blueprint
 
 def main_table():
     query = (
@@ -19,6 +19,7 @@ def main_table():
     ).limit(100)
     return [query.statement.columns.keys(), query.all()]
 
+#-----------------------------------------------------Buttons-----------------------------------------------------------
 
 def button1():
     """ТОП-10 самых длинных наблюдений НЛО"""
@@ -105,11 +106,9 @@ def button7():
 
     return [query.statement.columns.keys(), query.all()]
 
-
+#-----------------------------------------------------Classes-----------------------------------------------------------
 
 query = Blueprint('query', __name__)
-
-
 
 class Country(db.Model):
     __tablename__ = 'country'

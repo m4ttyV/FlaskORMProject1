@@ -1,6 +1,7 @@
 from structures.models import Country, City, State, Event
 from app import ma, db
 
+
 class CitySchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = City

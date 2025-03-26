@@ -1,12 +1,13 @@
+from config import db
 from sqlalchemy import func
-from structures.serializers import *
-from structures.models import *
-from flask import jsonify, abort, make_response, request
-from app import app
+from structures.serializers import EventSchema, CitySchema, StateSchema, CountrySchema
+from structures.models import Event, City, State, Country
+from flask import jsonify, abort, make_response, request, Blueprint
 
+
+crud_api = Blueprint('crud_api', __name__)
 # curl -i -H "Content-Type:application/json" -X PUT -d "{\"height\":500}" http://localhost:5000/structures/api/v1/buildings/65
 # curl -i -H "Content-Type:application/json" --data "{\"title\":\"Пекинская Башня CITIC\", \"city_id\":\"23\", \"year\":\"2018\"}" http://localhost:5000/structures/api/v1/buildings
-
 ###------------------------------------------------------EXTRAS------------------------------------------------------###
 # City-------------------------------------------------------
 def get_all_cities():
@@ -82,7 +83,7 @@ def update_event(event_id, update_par):
     return get_event(event_id)
 
 ###------------------------------------------------------ERRORS------------------------------------------------------###
-@app.errorhandler(400)
+@crud_api.errorhandler(400)
 def bad_request_error(error):
     response = {
         "error": "Bad Request",
@@ -90,14 +91,14 @@ def bad_request_error(error):
     }
     return jsonify(response), 400
 
-@app.errorhandler(404)
+@crud_api.errorhandler(404)
 def not_found(error):
  return make_response(jsonify({'error': 'Not found'}), 404)
 
 ###--------------------------------------------------------API-------------------------------------------------------###
 
 # Events-------------------------------------------------------
-@app.route('/structures/api/v1/events/<int:id>', methods=['PUT'])
+@crud_api.route('/structures/api/v1/events/<int:id>', methods=['PUT'])
 def update_one_event(id):
     # получить информацию о здании с указанным id
     event = get_event(id)
@@ -109,7 +110,7 @@ def update_one_event(id):
     event_update = update_event(id, request.get_json())
     return jsonify({'Event': str(event_update)})
 
-@app.route('/structures/api/v1/events', methods=['POST'])
+@crud_api.route('/structures/api/v1/events', methods=['POST'])
 def create_event():
     if ('id' in request.json and
             type(request.json['id']) is not int):
@@ -118,7 +119,7 @@ def create_event():
     event_new = insert_event(new_event)
     return jsonify({'Event': str(event_new)}), 201
 
-@app.route('/structures/api/v1/events/<int:id>', methods=['GET'])
+@crud_api.route('/structures/api/v1/events/<int:id>', methods=['GET'])
 def get_event(id):
     event_schema = EventSchema()
     event = Event.query.filter(Event.id == id).first()
@@ -126,13 +127,13 @@ def get_event(id):
         abort(404)
     return jsonify({"Event": event_schema.dump(event)})
 
-@app.route('/structures/api/v1/events', methods=['GET'])
+@crud_api.route('/structures/api/v1/events', methods=['GET'])
 def get_events():
     event_schema = EventSchema()
     build = get_all_events()
     return jsonify({"Event": event_schema.dump(build)})
 
-@app.route('/structure/api/v1/events/<int:event_id>', methods=['DELETE'])
+@crud_api.route('/structure/api/v1/events/<int:event_id>', methods=['DELETE'])
 def delete_one_event(event_id):
     # Поиск записи по ID
     event = Event.query.get(event_id)
@@ -147,7 +148,7 @@ def delete_one_event(event_id):
 
 # City-------------------------------------------------------
 
-@app.route('/structures/api/v1/cities/<int:id>', methods=['PUT'])
+@crud_api.route('/structures/api/v1/cities/<int:id>', methods=['PUT'])
 def update_one_city(id):
     # получить информацию о здании с указанным id
     city = get_city(id)
@@ -159,7 +160,7 @@ def update_one_city(id):
     city_update = update_city(id, request.get_json())
     return jsonify({'City': str(city_update)})
 
-@app.route('/structures/api/v1/cities', methods=['POST'])
+@crud_api.route('/structures/api/v1/cities', methods=['POST'])
 def create_city():
     if ('id' in request.json and
             type(request.json['id']) is not int):
@@ -168,7 +169,7 @@ def create_city():
     city_new = insert_city(new_city)
     return jsonify({'City': str(city_new)}), 201
 
-@app.route('/structures/api/v1/cities/<int:id>', methods=['GET'])
+@crud_api.route('/structures/api/v1/cities/<int:id>', methods=['GET'])
 def get_city(id):
     city_schema = CitySchema()
     city = State.query.filter(State.id == id).first()
@@ -176,13 +177,13 @@ def get_city(id):
         abort(404)
     return jsonify({"City": city_schema.dump(city)})
 
-@app.route('/structures/api/v1/cities', methods=['GET'])
+@crud_api.route('/structures/api/v1/cities', methods=['GET'])
 def get_cities():
     city_schema = CitySchema()
     city = get_all_cities()
     return jsonify({"City": city_schema.dump(city)})
 
-@app.route('/structure/api/v1/cities/<int:city_id>', methods=['DELETE'])
+@crud_api.route('/structure/api/v1/cities/<int:city_id>', methods=['DELETE'])
 def delete_one_city(city_id):
     # Поиск записи по ID
     city = City.query.get(city_id)
@@ -197,7 +198,7 @@ def delete_one_city(city_id):
 
 # State-------------------------------------------------------
 
-@app.route('/structures/api/v1/state/<int:id>', methods=['PUT'])
+@crud_api.route('/structures/api/v1/state/<int:id>', methods=['PUT'])
 def update_one_state(id):
     # получить информацию о здании с указанным id
     state = get_state(id)
@@ -209,7 +210,7 @@ def update_one_state(id):
     state_update = update_state(id, request.get_json())
     return jsonify({'State': str(state_update)})
 
-@app.route('/structures/api/v1/states', methods=['POST'])
+@crud_api.route('/structures/api/v1/states', methods=['POST'])
 def create_state():
     if ('id' in request.json and
             type(request.json['id']) is not int):
@@ -218,7 +219,7 @@ def create_state():
     state_new = insert_state(new_state)
     return jsonify({'State': str(state_new)}), 201
 
-@app.route('/structures/api/v1/states/<int:id>', methods=['GET'])
+@crud_api.route('/structures/api/v1/states/<int:id>', methods=['GET'])
 def get_state(id):
     state_schema = StateSchema()
     state = State.query.filter(State.id == id).first()
@@ -226,13 +227,13 @@ def get_state(id):
         abort(404)
     return jsonify({"State": state_schema.dump(state)})
 
-@app.route('/structures/api/v1/states', methods=['GET'])
+@crud_api.route('/structures/api/v1/states', methods=['GET'])
 def get_states():
     state_schema = StateSchema()
     state = get_all_states()
     return jsonify({"State": state_schema.dump(state)})
 
-@app.route('/structure/api/v1/states/<int:state_id>', methods=['DELETE'])
+@crud_api.route('/structure/api/v1/states/<int:state_id>', methods=['DELETE'])
 def delete_one_state(state_id):
     # Поиск записи по ID
     state = State.query.get(state_id)
@@ -247,7 +248,7 @@ def delete_one_state(state_id):
 
 # Country-------------------------------------------------------
 
-@app.route('/structures/api/v1/country/<int:id>', methods=['PUT'])
+@crud_api.route('/structures/api/v1/country/<int:id>', methods=['PUT'])
 def update_one_country(id):
     # получить информацию о здании с указанным id
     country = get_country(id)
@@ -259,7 +260,7 @@ def update_one_country(id):
     country_update = update_country(id, request.get_json())
     return jsonify({'Country': str(country_update)})
 
-@app.route('/structures/api/v1/country', methods=['POST'])
+@crud_api.route('/structures/api/v1/country', methods=['POST'])
 def create_country():
     if ('id' in request.json and
             type(request.json['id']) is not int):
@@ -268,7 +269,7 @@ def create_country():
     country_new = insert_state(new_country)
     return jsonify({'Country': str(country_new)}), 201
 
-@app.route('/structures/api/v1/countries/<int:id>', methods=['GET'])
+@crud_api.route('/structures/api/v1/countries/<int:id>', methods=['GET'])
 def get_state(id):
     country_schema = CountrySchema()
     country = Country.query.filter(Country.id == id).first()
@@ -276,13 +277,13 @@ def get_state(id):
         abort(404)
     return jsonify({"Country": country_schema.dump(country)})
 
-@app.route('/structures/api/v1/countries', methods=['GET'])
+@crud_api.route('/structures/api/v1/countries', methods=['GET'])
 def get_country():
     country_schema = CountrySchema()
     country = get_all_countries()
     return jsonify({"Country": country_schema.dump(country)})
 
-@app.route('/structure/api/v1/countries/<int:country_id>', methods=['DELETE'])
+@crud_api.route('/structure/api/v1/countries/<int:country_id>', methods=['DELETE'])
 def delete_one_country(country_id):
     # Поиск записи по ID
     country = Country.query.get(country_id)
@@ -295,7 +296,3 @@ def delete_one_country(country_id):
     # Возвращаем успешный результат
     return jsonify({"result": True})
 # End-------------------------------------------------------
-if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
-    app.run(debug=True)

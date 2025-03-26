@@ -1,12 +1,9 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_marshmallow import Marshmallow
 from flask_restful import Api
-
-
-
-db = SQLAlchemy()  # Создаем объект db без привязки к app
+from structures.crud import crud_api
+from config import db
 
 def create_app():
     app = Flask(__name__)
@@ -19,6 +16,7 @@ def create_app():
     return app
 
 app = create_app()
+app.register_blueprint(crud_api, url_prefix='/structures/api/v1')
 ma = Marshmallow(app)
 migrate = Migrate(app, db)
 api = Api(app)
