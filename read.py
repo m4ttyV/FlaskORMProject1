@@ -1,5 +1,4 @@
 import csv
-from sqlalchemy import func, desc
 from app import app, db
 from structure.models import Country, City, State, Event
 

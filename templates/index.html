@@ -12,6 +12,8 @@
     <button onclick="loadData('query3')">Вывести города с наибольшим количеством наблюдений НЛО</button>
     <button onclick="loadData('query4')">Вывести среднюю продолжительность наблюдений по странам</button>
     <button onclick="loadData('query5')">Вывести штаты с наибольшим количеством наблюдений</button>
+    <button onclick="loadData('query6')">Вывести наибольшую по длительности наблюдений страну</button>
+    <button onclick="loadData('query7')">Вывести наименьшую по длительности наблюдений страну</button>
 </div>
     <h3>Встречи НЛО</h3>
     <table>
@@ -47,6 +49,8 @@
     if (query === 'query3') url = '/query3';
     if (query === 'query4') url = '/query4';
     if (query === 'query5') url = '/query5';
+    if (query === 'query6') url = '/query6';
+    if (query === 'query7') url = '/query7';
 
     fetch(url)
         .then(response => response.text())
