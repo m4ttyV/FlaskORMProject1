@@ -1,6 +1,6 @@
 import csv
 from app import app, db
-from structure.models import Country, City, State, Event
+from structures.models import Country, City, State, Event
 
 
 def get_or_create(session, model, defaults=None, **kwargs):

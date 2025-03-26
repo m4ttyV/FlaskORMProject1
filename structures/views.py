@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template
-from structure.models import main_table, button1, button2, button3, button4, button5, button7, button6
+from structures.models import main_table, button1, button2, button3, button4, button5, button7, button6
 
 views = Blueprint('views', __name__)
 

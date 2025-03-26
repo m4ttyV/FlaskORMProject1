@@ -1,6 +1,6 @@
 from sqlalchemy import func
-from structure.serializers import *
-from structure.models import *
+from structures.serializers import *
+from structures.models import *
 from flask import jsonify, abort, make_response, request
 from app import app
 

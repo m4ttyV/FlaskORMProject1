@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template
 from app import db
-from structure.models import Event, City, State, Country
+from structures.models import Event, City, State, Country
 #
 # query = Blueprint('query', __name__)
 #

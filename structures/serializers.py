@@ -1,4 +1,4 @@
-from structure.models import Country, City, State, Event
+from structures.models import Country, City, State, Event
 from app import ma, db
 
 class CitySchema(ma.SQLAlchemyAutoSchema):
