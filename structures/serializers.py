@@ -1,15 +1,16 @@
 from structures.models import Country, City, State, Event
-from app import ma, db
-
+from structures.extensions import db, ma
+from marshmallow import fields
 
 class CitySchema(ma.SQLAlchemyAutoSchema):
+    state_name = fields.String(attribute="state.name")
     class Meta:
         model = City
         include_fk = True
         load_instance = True
         sqla_session = db.session
-        fields = ("id", "name", "state_id")
-
+        # fields = ("id", "name", "state_id")
+        fields = ("id", "name", "state_name")
 class CountrySchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Country

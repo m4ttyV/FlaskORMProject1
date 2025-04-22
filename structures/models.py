@@ -1,4 +1,4 @@
-from config import db
+from structures.extensions import db
 from flask import Blueprint
 
 def main_table():
