@@ -171,7 +171,6 @@ def update_one_city(id):
     return jsonify({'City': str(city_update)})
 
 @crud_api.route('/cities', methods=['POST'])
-
 def create_city():
     if ('id' in request.json and
             type(request.json['id']) is not int):
@@ -186,7 +185,6 @@ def get_city(id):
     city = City.query.options(joinedload(City.state)).filter(City.id == id).first()
     if city is None:
         abort(404)
-
     return jsonify({"City": city_schema.dump(city)})
 
 @crud_api.route('/cities', methods=['GET'])
@@ -235,6 +233,7 @@ def create_state():
 def get_state(id):
     state_schema = StateSchema()
     state = State.query.filter(State.id == id).first()
+    #state = State.query.options(joinedload(State.country)).filter(State.id == id).first()
     if state is None:
         abort(404)
     return jsonify({"State": state_schema.dump(state)})

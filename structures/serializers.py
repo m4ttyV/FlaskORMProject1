@@ -9,15 +9,16 @@ class CitySchema(ma.SQLAlchemyAutoSchema):
         include_fk = True
         load_instance = True
         sqla_session = db.session
-        # fields = ("id", "name", "state_id")
-        fields = ("id", "name", "state_name")
+        fields = ("id", "name", "state_id")
+        #fields = ("id", "name", "state_name")
 class CountrySchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Country
         include_fk = True
         load_instance = True
         sqla_session = db.session
-        fields = ("id", "name")
+        #fields = ("id", "name")
+        fields = ("id", "name", "country_name")
 
 class EventSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
