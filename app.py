@@ -2,10 +2,13 @@ from flask import Flask
 from flask_migrate import Migrate
 from flask_restful import Api
 from structures.crud import crud_api
-from structures.extensions import db, ma
+from structures.extensions import db
+from flask_cors import CORS
+
 
 def create_app():
     app = Flask(__name__)
+    CORS(app)
     app.config.from_pyfile("config.py")
     db.init_app(app)  # Привязываем db к app
     from structures.views import views  # Импортируем Blueprint
